@@ -2,6 +2,8 @@ Require Export Bool.
 Require Export List.
 Export ListNotations.
 
+Require Export common.
+
 Module BLang.
 
 
@@ -32,39 +34,6 @@ Inductive bevalR : bterm -> bterm -> Prop :=
       (t1 || t1') ->
       (BIF t1 THEN t2 ELSE t3 FI || BIF t1' THEN t2 ELSE t3 FI)
   where "t '||' t'" := (bevalR t t') : type_scope.
-
-
-Require String. Open Scope string_scope.
-
-Ltac move_to_top x :=
-  match reverse goal with
-  | H : _ |- _ => try move x after H
-  end.
-
-Tactic Notation "assert_eq" ident(x) constr(v) :=
-  let H := fresh in
-  assert (x = v) as H by reflexivity;
-  clear H.
-
-Tactic Notation "Case_aux" ident(x) constr(name) :=
-  first [
-    set (x := name); move_to_top x
-  | assert_eq x name; move_to_top x
-  | fail 1 "because we are working on a different case" ].
-
-
-Tactic Notation "bevalR_cases" tactic(first) ident(c) :=
-  first;
-  [ Case_aux c "E_IfTrue" | Case_aux c "E_IfFalse" | Case_aux c "E_If" ].
-
-Tactic Notation "Case" constr(name) := Case_aux Case name.
-Tactic Notation "SCase" constr(name) := Case_aux SCase name.
-Tactic Notation "SSCase" constr(name) := Case_aux SSCase name.
-Tactic Notation "SSSCase" constr(name) := Case_aux SSSCase name.
-Tactic Notation "SSSSCase" constr(name) := Case_aux SSSSCase name.
-Tactic Notation "SSSSSCase" constr(name) := Case_aux SSSSSCase name.
-Tactic Notation "SSSSSSCase" constr(name) := Case_aux SSSSSSCase name.
-Tactic Notation "SSSSSSSCase" constr(name) := Case_aux SSSSSSSCase name.
 
 (**
 s = if true then false else false
@@ -137,3 +106,5 @@ Proof.
       reflexivity.
       assumption.
 Qed.
+
+End BLang.
