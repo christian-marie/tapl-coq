@@ -86,21 +86,34 @@ Theorem one_step_deterministic : forall t t' t'' : bterm,
 Proof.
   intros t t' t'' erel1  erel2.
   generalize dependent t''.
+  (* By induction on a derivation of t -> t' *)
   bevalR_cases (induction erel1; intros) Case.
+  (* If the rule used in the derivation of t -> t' is E-IfTrue *)
   Case "E_IfTrue".
+    (* If the rule used in the derivation of t -> t'' is E-IfTrue,
+     *  then trivially t = t''  *)
     inversion erel2. reflexivity.
+    (* E-IfFalse is ruled out by the fact that t = true *)
+    (* E-If is ruled out by the fact that t is not further reducable *)
     inversion H3.
+  (* A simular argument holds if t -> t' is E-IfFalse *)
   Case "E_IfFalse".
     inversion erel2. reflexivity.
     inversion H3.
+  (* Finaly, if the last rule in the derivation of t -> t' is E-If,
+   * then we have evidence that the guard of this has an evaluation
+   * relation. *)
   Case "E_If".
     bevalR_cases (inversion erel2) SCase.
+    (* We can rule out E-IfFalse by false's lack of relation *)
     SCase "E_IfTrue".
       subst.
       inversion erel1.
+    (* Similarly E-IfTrue *)
     SCase "E_IfFalse".
       subst.
       inversion erel1.
+    (* And now, the induction hypothesis applies *)
     SCase "E_If".
       rewrite IHerel1 with t1'0.
       reflexivity.
